@@ -1,0 +1,12 @@
+{
+  "name": "alteholz-tdc",
+  "version": "0.0.1",
+  "author": "Thorsten Alteholz",
+  "summary": "test-driven configuration",
+  "license": "GPL-2.0",
+  "source": "https://github.com/alteholz/puppet-tdc",
+  "project_page": "https://github.com/alteholz/puppet-tdc",
+  "dependencies": [
+    { "name":"puppetlabs/concat","version_requirement":">= 5.1.0" }
+  ],
+}
