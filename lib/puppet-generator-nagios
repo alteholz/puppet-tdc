@@ -1,0 +1,70 @@
+#!/bin/bash
+#
+#    TDC: Test-driven configuration
+#
+#    generator of nagios config files
+#
+#    Copyright (C) 2020  Thorsten Alteholz
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation in version 2 of the License.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
+
+DEST=$1
+WHAT=$2
+APPEND=$3
+PARA1="$4"
+PARA2="$5"
+
+OUT=$DEST-$WHAT.cfg
+
+if [ "x$APPEND" == "xno" ]; then
+  rm -f $OUT
+fi
+
+if [ "x$PARA1" == "xdummy" ]; then
+  # we just want to delete the file, do nothing more
+  exit 0
+fi
+
+if [ "x$WHAT" == "xservice" ]; then
+  echo "define service {" >> $OUT
+  echo "        hostgroup_name                  $PARA1" >> $OUT
+  echo "        service_description             Service for `basename $DEST`" >> $OUT
+  echo "        check_command                   check_nrpe_1arg!$PARA1" >> $OUT
+  echo "        use                             generic-service" >> $OUT
+  echo "        notification_interval           0" >> $OUT
+  echo "}" >> $OUT
+
+  exit 0
+fi
+
+if [ "x$WHAT" == "xhost" ]; then
+  echo "define host{" >> $OUT
+  echo "        use                     generic-host" >> $OUT
+  echo "        host_name               $PARA1" >> $OUT
+  echo "        }" >> $OUT
+
+  exit 0
+fi
+
+if [ "x$WHAT" == "xhostgroup" ]; then
+  echo "define hostgroup {" >> $OUT
+  echo "        hostgroup_name  $PARA1" >> $OUT
+  echo "        alias           $PARA1" >> $OUT
+  echo "        members         $PARA2" >> $OUT
+  echo "        }" >> $OUT
+
+  exit 0
+fi
+
+exit 1

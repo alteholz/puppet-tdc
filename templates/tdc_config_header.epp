@@ -1,0 +1,4 @@
+# this file contains the test created for <%= $type %>
+# in module <%= $cmn %>
+#
+#
