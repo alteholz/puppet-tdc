@@ -9,7 +9,7 @@
   "dependencies": [
     {
       "name": "puppetlabs/concat",
-      "version_requirement": ">= 5.1.0"
+      "version_requirement": ">= 5.1.0 <= 6.2.0"
     }
   ],
   "operatingsystem_support": [

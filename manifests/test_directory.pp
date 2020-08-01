@@ -31,6 +31,8 @@
 
 class tdc::test_directory (
   Array   $directory      = [],
+  String  $nagiosout      = "${::tdc::nagiosdir}/tdc-${::fqdn}-${::tdc::caller_module_name}-directory",
+  String  $nagioscheck    = "${::tdc::checkrootdir}/${::tdc::checkscriptdir}/check_tdc_directory",
 ) inherits tdc {
 
   Exec {
@@ -41,36 +43,45 @@ class tdc::test_directory (
     owner  => 'root',
     group  => 'root',
     mode   => '0644',
-   notify  => Service[$::tdc::nrpeservice],
+    notify => Service[$::tdc::nrpeservice],
   }
 
   concat::fragment{ "${::tdc::checkrootdir}/${::tdc::checkconfigdir}/tdc_${::tdc::caller_module_name}-directory.cfg header":
-      target   => "${::tdc::checkrootdir}/${::tdc::checkconfigdir}/tdc_${::tdc::caller_module_name}-directory.cfg",
-      content  => epp('tdc/tdc_config_header.epp', {'type' => 'test for directories', 'cmn' => $::tdc::caller_module_name}),
-      order    => '00',
+      target  => "${::tdc::checkrootdir}/${::tdc::checkconfigdir}/tdc_${::tdc::caller_module_name}-directory.cfg",
+      content => epp('tdc/tdc_config_header.epp', {'type' => 'test for directories', 'cmn' => $::tdc::caller_module_name}),
+      order   => '00',
   }
 
-  generate ('/bin/bash', '-c', "${::tdc::generator} ${::tdc::nagiosdir}/tdc-${fqdn}-${::tdc::caller_module_name}-directory service no dummy")
-  generate ('/bin/bash', '-c', "${::tdc::generator} ${::tdc::nagiosdir}/tdc-${fqdn}-${::tdc::caller_module_name}-directory hostgroup no dummy ${fqdn}")
+  generate ('/bin/bash',
+            '-c',
+            "${::tdc::generator} ${nagiosout} service no dummy")
+  generate ('/bin/bash',
+            '-c',
+            "${::tdc::generator} ${nagiosout} hostgroup no dummy ${::fqdn}")
 
   # create the tests from the directory array
   $directory.each | $f, $ddd | {
-     concat::fragment { "${ddd} ${f}":
-       target  => "${::tdc::checkrootdir}/${::tdc::checkconfigdir}/tdc_${::tdc::caller_module_name}-directory.cfg",
-       content => "command[check_tdc_${::tdc::caller_module_name}-${f}-${fqdn}-directory]=${::tdc::checkrootdir}/${::tdc::checkscriptdir}/check_tdc_directory ${ddd}\n",
-     }
-     generate ('/bin/bash', '-c', "${::tdc::generator} ${::tdc::nagiosdir}/tdc-${fqdn}-${::tdc::caller_module_name}-directory service yes check_tdc_${::tdc::caller_module_name}-${f}-${fqdn}-directory")
-     generate ('/bin/bash', '-c', "${::tdc::generator} ${::tdc::nagiosdir}/tdc-${fqdn}-${::tdc::caller_module_name}-directory hostgroup yes check_tdc_${::tdc::caller_module_name}-${f}-${fqdn}-directory ${fqdn}")
+    concat::fragment { "${ddd} ${f}":
+      target  => "${::tdc::checkrootdir}/${::tdc::checkconfigdir}/tdc_${::tdc::caller_module_name}-directory.cfg",
+      content => "command[check_tdc_${::tdc::caller_module_name}-${f}-${::fqdn}-directory]=${nagioscheck} ${ddd}\n",
+    }
+    generate ('/bin/bash',
+              '-c',
+              "${::tdc::generator} ${nagiosout} service yes check_tdc_${::tdc::caller_module_name}-${f}-${::fqdn}-directory")
+    generate ('/bin/bash',
+              '-c',
+              "${::tdc::generator} ${nagiosout} hostgroup yes check_tdc_${::tdc::caller_module_name}-${f}-${::fqdn}-directory ${::fqdn}")
   }
 
   file{ "${::tdc::checkrootdir}/${::tdc::checkscriptdir}/check_tdc_directory":
-      ensure   => file,
-      owner    => 'root',
-      group    => 'root',
-      mode     => '0755',
-      path     => "${::tdc::checkrootdir}/${::tdc::checkscriptdir}/check_tdc_directory",
-      content  => epp('tdc/check_tdc_directory.epp'),
+      ensure  => file,
+      owner   => 'root',
+      group   => 'root',
+      mode    => '0755',
+      path    => "${::tdc::checkrootdir}/${::tdc::checkscriptdir}/check_tdc_directory",
+      content => epp('tdc/check_tdc_directory.epp'),
   }
 
-#III we don't need hosts yet:  generate ("/bin/bash", "-c", "${::tdc::generator} ${::tdc::nagiosdir}/tdc-$fqdn-${::tdc::caller_module_name}-directory host no $fqdn")
+#III we don't need hosts yet:
+#  generate ("/bin/bash", "-c", "${::tdc::generator} ${nagiosout} host no ${::fqdn}")
 }
