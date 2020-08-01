@@ -6,6 +6,7 @@
   "license": "GPL-2.0",
   "source": "https://github.com/alteholz/puppet-tdc",
   "project_page": "https://github.com/alteholz/puppet-tdc",
+  "issues_url": "https://github.com/alteholz/puppet-tdc/issues",
   "dependencies": [
     {
       "name": "puppetlabs/concat",
