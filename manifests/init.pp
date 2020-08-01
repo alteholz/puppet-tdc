@@ -41,33 +41,33 @@
 #   service to notify in case of changed test configuration
 #
 class tdc (
-  String  $monitor			= "nagios",
-  String  $checkrootdir			= "/usr/local/nagios/tdc",
-  String  $checkscriptdir		= "plugins",
-  String  $checkconfigdir		= "config",
-  String  $nagiosdir			= "/etc/puppet/code/environments/production/modules/nagios4_server/files/tdc",
-  String  $generator			= "/usr/share/puppet/modules/tdc/lib/puppet-generator-nagios",
-  String  $nrpeservice			= "nagios-nrpe-server",
+  String  $monitor      = 'nagios',
+  String  $checkrootdir      = '/usr/local/nagios/tdc',
+  String  $checkscriptdir    = 'plugins',
+  String  $checkconfigdir    = 'config',
+  String  $nagiosdir      = '/etc/puppet/code/environments/production/modules/nagios4_server/files/tdc',
+  String  $generator      = '/usr/share/puppet/modules/tdc/lib/puppet-generator-nagios',
+  String  $nrpeservice      = 'nagios-nrpe-server',
 ) {
 
   Exec {
     path    => ['/usr/bin', '/usr/sbin', '/bin'],
   }
 
-  file{ "$checkrootdir":
+  file{ $checkrootdir:
       ensure => directory,
       owner  => 'root',
       group  => 'root',
       mode   => '0755',
     }
-  file{ "$checkrootdir/$checkscriptdir":
+  file{ "${checkrootdir}/${checkscriptdir}":
       ensure => directory,
       owner  => 'root',
       group  => 'root',
       mode   => '0755',
     }
 
-  file{ "$checkrootdir/$checkconfigdir":
+  file{ "${checkrootdir}/${checkconfigdir}":
       ensure => directory,
       owner  => 'root',
       group  => 'root',
