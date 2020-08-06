@@ -47,8 +47,8 @@ define tdc::test_config (
   }
 
   case $type {
-	'apache2', 'apache': { $doit = '/usr/sbin/apache2ctl -t' }
-	'default': {$doit = $command }
+    'apache2', 'apache': { $doit = '/usr/sbin/apache2ctl -t' }
+    default: {$doit = $command }
   }
   if $doit == '' {$doit = '/bin/false' }
 

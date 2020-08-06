@@ -50,8 +50,6 @@ class tdc (
   String  $nrpeservice      = 'nagios-nrpe-server',
 ) {
 
-  warning("here i am $nrpeservice")
-
   Exec {
     path    => ['/usr/bin', '/usr/sbin', '/bin'],
   }

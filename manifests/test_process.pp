@@ -32,7 +32,7 @@
 define tdc::test_process (
   Array   $process     = [],
   String  $nagiosout   = "${::tdc::nagiosdir}/tdc-${::fqdn}-${title}-process",
-  String  $nagioscheck = "/usr/lib/nagios/plugins/check_procs",
+  String  $nagioscheck = '/usr/lib/nagios/plugins/check_procs',
   Integer $minprocs    = 1,
   Integer $maxprocs    = 1,
   String  $tdctitle = $title,
