@@ -21,7 +21,7 @@
 # @summary initial configuration of the TDC module, needs to be called first
 #
 # @example Basic usage
-#   class { 'tdc':
+#   tdc {}
 #   }
 #
 # @param monitor
@@ -49,6 +49,8 @@ class tdc (
   String  $generator      = '/usr/share/puppet/modules/tdc/lib/puppet-generator-nagios',
   String  $nrpeservice      = 'nagios-nrpe-server',
 ) {
+
+  warning("here i am $nrpeservice")
 
   Exec {
     path    => ['/usr/bin', '/usr/sbin', '/bin'],

@@ -1,0 +1,44 @@
+#!/bin/bash
+#
+#    TDC: Test-driven configuration
+#
+#    performs check whether file group is correctly set
+#
+#    Copyright (C) 2020  Thorsten Alteholz
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation in version 2 of the License.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
+# parameter: FILE -> file to test
+#            GROUP -> expected group of file
+
+FILE=$1
+GROUP=$2
+
+if [ ! -f $FILE ] && [ ! -d $FILE ]; then
+  echo "CRITICAL: $FILE is not available"
+  exit 2
+fi
+
+STAT=/usr/bin/stat
+
+testgroup="$($STAT --format '%G' "$1")"
+if [ "x${testgroup}" = "x${GROUP}" ]; then
+  echo "OK: group $GROUP of $FILE is OK"
+  exit 0
+else
+  echo "CRITICAL: $GROUP is not group of $FILE"
+  exit 2
+fi
+
+echo "CRITICAL: what am I doing here"
+exit 2
