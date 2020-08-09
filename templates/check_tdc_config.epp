@@ -18,9 +18,9 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
-# parameter: COMMAND -> command to test config
+# parameter: COMMAND -> command to test config with
 
-COMMAND=$1
+COMMAND="$@"
 
 $COMMAND
 rc=$?

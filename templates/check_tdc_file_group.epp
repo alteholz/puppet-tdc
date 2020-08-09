@@ -2,7 +2,7 @@
 #
 #    TDC: Test-driven configuration
 #
-#    performs check whether file group is correctly set
+#    performs check whether group access of file is correctly set
 #
 #    Copyright (C) 2020  Thorsten Alteholz
 #

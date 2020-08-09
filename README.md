@@ -23,3 +23,5 @@
 At the moment, this module can only be used together with nagios.
 
 ## Development
+
+The repository is available at github: https://github.com/alteholz/puppet-tdc

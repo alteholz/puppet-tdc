@@ -2,7 +2,7 @@
 #
 #    TDC: Test-driven configuration
 #
-#    performs check whether directory is available
+#    performs check whether directory is available and really is a directory
 #
 #    Copyright (C) 2020  Thorsten Alteholz
 #
