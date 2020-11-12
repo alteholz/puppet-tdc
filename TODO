@@ -1,0 +1,29 @@
+integrate into puppet:
+
+-> apt-get install puppet-module-alteholz-tdc
+
+-> /etc/puppet/code/environments/production/manifests/nodes.pp
+	in the beginning: 
+	        class {'tdc':
+		}     
+
+-> nagios4_server module
+        /etc/puppet/code/environments/production/modules/nagios4_server/files/tdc <- owner puppet.puppet
+
+	file { '/etc/nagios4/conf.d/tdc':
+          ensure => 'directory',
+          source => 'puppet:///modules/nagios4_server/tdc',
+          recurse => 'remote',
+          path => '/etc/nagios4/conf.d/tdc',
+          owner => 'root',
+          group => 'root',
+          mode  => '0755',
+          notify  => Service["nagios4"],
+        }
+
+-> nagios_nrpe_server
+	/etc/puppet/code/environments/production/modules/nagios_nrpe_server/files
+
+	in nrpe_local.cfg at the end: 	include_dir=/usr/local/nagios/tdc/config
+
+
