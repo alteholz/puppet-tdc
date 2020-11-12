@@ -24,9 +24,16 @@ WHAT=$2
 APPEND=$3
 PARA1="$4"
 PARA2="$5"
+PARA3="$6"
 
 OUT=$DEST-$WHAT.cfg
 
+if [ "x$APPEND" == "xonlycreateonce" ]; then
+  # we only want to create the file once
+  if [ -f $OUT ]; then
+    exit 0
+  fi
+fi
 if [ "x$APPEND" == "xno" ]; then
   rm -f $OUT
 fi
@@ -49,9 +56,32 @@ if [ "x$WHAT" == "xservice" ]; then
 fi
 
 if [ "x$WHAT" == "xhost" ]; then
+  # we can not give all stuff as parameter here, so we use a hostdb and grep everything
+  hostuse=$PARA2
+  if [ -f $PARA3 ]; then
+    hostentry=`grep $PARA1 $PARA3`
+    if [ ! -z "$hostentry" ]; then
+      hostuse=`echo $hostentry|awk -F"#" '{printf("%s\n",$2)}'`
+      if [ -z "$hostuse" ]; then
+        # we have an empty "use" field in the database, so use default again
+        hostuse=$PARA2
+      fi
+      hostaddress=`echo $hostentry|awk -F"#" '{printf("%s\n",$3)}'`
+    fi
+  fi
+  # in case of an empty value, better do nothing
+  if [ "x$PARA1" == "x" ]; then
+    exit 2
+  fi
+  if [ "x$hostuse" == "x" ]; then
+    exit 3
+  fi
   echo "define host{" >> $OUT
-  echo "        use                     generic-host" >> $OUT
+  echo "        use                     $hostuse" >> $OUT
   echo "        host_name               $PARA1" >> $OUT
+  if [ ! -z "$hostaddress" ]; then
+     echo "        address                 $hostaddress" >> $OUT
+  fi 
   echo "        }" >> $OUT
 
   exit 0
