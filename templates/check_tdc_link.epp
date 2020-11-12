@@ -1,0 +1,32 @@
+#!/bin/bash
+#
+#    TDC: Test-driven configuration
+#
+#    performs check whether link is available and really is a link
+#
+#    Copyright (C) 2020  Thorsten Alteholz
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation in version 2 of the License.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
+# parameter: LINK -> link to test
+
+LINK=$1
+DEST=$2
+
+if [ -L $LINK ]; then
+  echo "OK: $LINK is available"
+  exit 0
+fi
+
+echo "CRITICAL: $LINK is not available"
+exit 2
