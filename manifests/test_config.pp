@@ -70,9 +70,9 @@ define tdc::test_config (
     notify  => Service[$::tdc::nrpeservice],
   }
   generate ('/bin/bash', '-c',
-            "${::tdc::generator} ${nagiosout} service no check_tdc_${title}-${::fqdn}-config")
+            "${::tdc::generator} ${nagiosout} service onlycreateonce check_tdc_${title}-${::fqdn}-config")
   generate ('/bin/bash', '-c',
-            "${::tdc::generator} ${nagiosout} hostgroup no check_tdc_${title}-${::fqdn}-config ${::fqdn}")
+            "${::tdc::generator} ${nagiosout} hostgroup onlycreateonce check_tdc_${title}-${::fqdn}-config ${::fqdn}")
 
 if !defined(File["${tdc::checkrootdir}/${tdc::checkscriptdir}/check_tdc_config"]) {
   file{ "${::tdc::checkrootdir}/${::tdc::checkscriptdir}/check_tdc_config":
