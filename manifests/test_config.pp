@@ -37,7 +37,7 @@
 define tdc::test_config (
   String  $command     = '',
   String  $type        = 'undef',
-  String  $nagiosout   = "${tdc::nagiosdir}/tdc-${::fqdn}-${title}-config",
+  String  $nagiosout   = "${tdc::nagiosdir}/tdc-${facts['networking']['fqdn']}-${title}-config",
   String  $nagioscheck = "${tdc::checkrootdir}/${tdc::checkscriptdir}/check_tdc_config",
 ) {
 #) inherits tdc {
@@ -52,39 +52,39 @@ define tdc::test_config (
   }
   if $doit == '' {$doit = '/bin/false' }
 
-  concat{ "${::tdc::checkrootdir}/${::tdc::checkconfigdir}/tdc_${title}-config.cfg":
+  concat{ "${tdc::checkrootdir}/${tdc::checkconfigdir}/tdc_${title}-config.cfg":
     owner => 'root',
     group => 'root',
     mode  => '0644',
   }
 
-  concat::fragment{ "${::tdc::checkrootdir}/${::tdc::checkconfigdir}/tdc_${title}-config.cfg header":
-      target  => "${::tdc::checkrootdir}/${::tdc::checkconfigdir}/tdc_${title}-config.cfg",
+  concat::fragment{ "${tdc::checkrootdir}/${tdc::checkconfigdir}/tdc_${title}-config.cfg header":
+      target  => "${tdc::checkrootdir}/${tdc::checkconfigdir}/tdc_${title}-config.cfg",
       content => epp('tdc/tdc_config_header.epp', {'type' => 'test for config', 'cmn' => $title}),
       order   => '00',
   }
 
-  concat::fragment{ "${::tdc::checkrootdir}/${::tdc::checkconfigdir}/tdc_${title}-config.cfg 1":
-    target  => "${::tdc::checkrootdir}/${::tdc::checkconfigdir}/tdc_${title}-config.cfg",
-    content => "command[check_tdc_${$title}-${::fqdn}-config]=${nagioscheck} '${doit}'\n",
-    notify  => Service[$::tdc::nrpeservice],
+  concat::fragment{ "${tdc::checkrootdir}/${tdc::checkconfigdir}/tdc_${title}-config.cfg 1":
+    target  => "${tdc::checkrootdir}/${tdc::checkconfigdir}/tdc_${title}-config.cfg",
+    content => "command[check_tdc_${$title}-${facts['networking']['fqdn']}-config]=${nagioscheck} '${doit}'\n",
+    notify  => Service[$tdc::nrpeservice],
   }
   generate ('/bin/bash', '-c',
-            "${::tdc::generator} ${nagiosout} service onlycreateonce check_tdc_${title}-${::fqdn}-config")
+            "${tdc::generator} ${nagiosout} service onlycreateonce check_tdc_${title}-${facts['networking']['fqdn']}-config")
   generate ('/bin/bash', '-c',
-            "${::tdc::generator} ${nagiosout} hostgroup onlycreateonce check_tdc_${title}-${::fqdn}-config ${::fqdn}")
+            "${tdc::generator} ${nagiosout} hostgroup onlycreateonce check_tdc_${title}-${facts['networking']['fqdn']}-config ${facts['networking']['fqdn']}")
 
 if !defined(File["${tdc::checkrootdir}/${tdc::checkscriptdir}/check_tdc_config"]) {
-  file{ "${::tdc::checkrootdir}/${::tdc::checkscriptdir}/check_tdc_config":
+  file{ "${tdc::checkrootdir}/${tdc::checkscriptdir}/check_tdc_config":
       ensure  => file,
       owner   => 'root',
       group   => 'root',
       mode    => '0755',
-      path    => "${::tdc::checkrootdir}/${::tdc::checkscriptdir}/check_tdc_config",
+      path    => "${tdc::checkrootdir}/${tdc::checkscriptdir}/check_tdc_config",
       content => epp('tdc/check_tdc_config.epp'),
   }
 }
 
 #III we don't need hosts yet:
-# generate ("/bin/bash", "-c", "${::tdc::generator} ${::tdc::nagiosdir}/tdc-$fqdn-${title}-config host no $fqdn")
+# generate ("/bin/bash", "-c", "${tdc::generator} ${tdc::nagiosdir}/tdc-$fqdn-${title}-config host no $fqdn")
 }

@@ -31,7 +31,7 @@
 
 define tdc::test_process (
   Array   $process     = [],
-  String  $nagiosout   = "${::tdc::nagiosdir}/tdc-${::fqdn}-${title}-process",
+  String  $nagiosout   = "${tdc::nagiosdir}/tdc-${facts['networking']['fqdn']}-${title}-process",
   String  $nagioscheck = '/usr/lib/nagios/plugins/check_procs',
   Integer $minprocs    = 1,
   Integer $maxprocs    = 1,
@@ -43,36 +43,35 @@ define tdc::test_process (
     path    => ['/usr/bin', '/usr/sbin', '/bin'],
   }
 
-  concat{ "${::tdc::checkrootdir}/${::tdc::checkconfigdir}/tdc_${title}-process.cfg":
+  concat { "${tdc::checkrootdir}/${tdc::checkconfigdir}/tdc_${title}-process.cfg":
     owner => 'root',
     group => 'root',
     mode  => '0644',
   }
 
-  concat::fragment{ "${::tdc::checkrootdir}/${::tdc::checkconfigdir}/tdc_${title}-process.cfg header":
-      target  => "${::tdc::checkrootdir}/${::tdc::checkconfigdir}/tdc_${title}-process.cfg",
-      content => epp('tdc/tdc_config_header.epp', {'type' => 'test for process', 'cmn' => $title}),
-      order   => '00',
+  concat::fragment { "${tdc::checkrootdir}/${tdc::checkconfigdir}/tdc_${title}-process.cfg header":
+    target  => "${tdc::checkrootdir}/${tdc::checkconfigdir}/tdc_${title}-process.cfg",
+    content => epp('tdc/tdc_config_header.epp', { 'type' => 'test for process', 'cmn' => $title }),
+    order   => '00',
   }
 
-  generate ('/bin/bash', '-c',
-            "${::tdc::generator} ${nagiosout} service no dummy")
-  generate ('/bin/bash', '-c',
-            "${::tdc::generator} ${nagiosout} hostgroup no dummy ${::fqdn}")
+  generate ('/bin/bash', '-c', "${tdc::generator} ${nagiosout} service no dummy")
+  generate ('/bin/bash', '-c', "${tdc::generator} ${nagiosout} hostgroup no dummy ${facts['networking']['fqdn']}")
 
   # create the tests from the process array
   $process.each | $f, $fff | {
     concat::fragment { "${fff} ${f}":
-      target  => "${::tdc::checkrootdir}/${::tdc::checkconfigdir}/tdc_${title}-process.cfg",
-      content => "command[check_tdc_${title}-${f}-${::fqdn}-process]=${nagioscheck} -C ${fff} -c ${minprocs}:${maxprocs}\n",
-      notify  => Service[$::tdc::nrpeservice],
+      target  => "${tdc::checkrootdir}/${tdc::checkconfigdir}/tdc_${title}-process.cfg",
+      content => "command[check_tdc_${title}-${f}-${facts['networking']['fqdn']}-process]=${nagioscheck}
+        -C ${fff} -c ${minprocs}:${maxprocs}\n",
+      notify  => Service[$tdc::nrpeservice],
     }
-    generate ('/bin/bash', '-c',
-              "${::tdc::generator} ${nagiosout} service yes check_tdc_${title}-${f}-${::fqdn}-process")
-    generate ('/bin/bash', '-c',
-              "${::tdc::generator} ${nagiosout} hostgroup yes check_tdc_${title}-${f}-${::fqdn}-process ${::fqdn}")
+  generate ('/bin/bash', '-c', "${tdc::generator} ${nagiosout} service yes
+    check_tdc_${title}-${f}-${facts['networking']['fqdn']}-process")
+  generate ('/bin/bash', '-c', "${tdc::generator} ${nagiosout} hostgroup yes
+    check_tdc_${title}-${f}-${facts['networking']['fqdn']}-process ${facts['networking']['fqdn']}")
   }
 
 #III we don't need hosts yet:
-# generate ("/bin/bash", "-c", "${::tdc::generator} ${::tdc::nagiosdir}/tdc-$fqdn-${title}-process host no $fqdn")
+# generate ("/bin/bash", "-c", "${tdc::generator} ${tdc::nagiosdir}/tdc-$fqdn-${title}-process host no $fqdn")
 }

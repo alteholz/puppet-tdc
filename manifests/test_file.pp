@@ -31,7 +31,7 @@
 
 define tdc::test_file (
   Array   $file        = [],
-  String  $nagiosout   = "${tdc::nagiosdir}/tdc-${::fqdn}-${title}-file",
+  String  $nagiosout   = "${tdc::nagiosdir}/tdc-${facts['networking']['fqdn']}-${title}-file",
   String  $nagioscheck = "${tdc::checkrootdir}/${tdc::checkscriptdir}/check_tdc_file",
   String  $tdctitle = $title,
 ) {
@@ -58,19 +58,19 @@ define tdc::test_file (
   generate ('/bin/bash', '-c',
             "${tdc::generator} ${nagiosout} service no dummy")
   generate ('/bin/bash', '-c',
-            "${tdc::generator} ${nagiosout} hostgroup no dummy ${::fqdn}")
+            "${tdc::generator} ${nagiosout} hostgroup no dummy ${facts['networking']['fqdn']}")
 
   # create the tests from the file array
   $file.each | $f, $fff | {
     concat::fragment { "${fff} ${f}":
       target  => "${tdc::checkrootdir}/${tdc::checkconfigdir}/tdc_${title}-file.cfg",
-      content => "command[check_tdc_${title}-${f}-${::fqdn}-file]=${nagioscheck} ${fff}\n",
+      content => "command[check_tdc_${title}-${f}-${facts['networking']['fqdn']}-file]=${nagioscheck} ${fff}\n",
       notify  => Service[$tdc::nrpeservice],
     }
     generate ('/bin/bash', '-c',
-              "${tdc::generator} ${nagiosout} service yes check_tdc_${title}-${f}-${::fqdn}-file")
+              "${tdc::generator} ${nagiosout} service yes check_tdc_${title}-${f}-${facts['networking']['fqdn']}-file")
     generate ('/bin/bash', '-c',
-              "${tdc::generator} ${nagiosout} hostgroup yes check_tdc_${title}-${f}-${::fqdn}-file ${::fqdn}")
+              "${tdc::generator} ${nagiosout} hostgroup yes check_tdc_${title}-${f}-${facts['networking']['fqdn']}-file ${facts['networking']['fqdn']}")
   }
 
 if !defined(File["${tdc::checkrootdir}/${tdc::checkscriptdir}/check_tdc_file"]) {

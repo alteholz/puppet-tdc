@@ -31,7 +31,7 @@
 
 define tdc::test_hostipv6 (
   Array   $host         = [],
-  String  $nagiosout    = "${::tdc::nagiosdir}/tdc-${::fqdn}-${title}-hostipv6",
+  String  $nagiosout    = "${tdc::nagiosdir}/tdc-${facts['networking']['fqdn']}-${title}-hostipv6",
   String  $nagioscheck  = '/usr/lib/nagios/plugins/check_ping',
   String  $pingwarning  = "1000,20%",
   String  $pingcritical = "1500,60%",
@@ -43,36 +43,36 @@ define tdc::test_hostipv6 (
     path    => ['/usr/bin', '/usr/sbin', '/bin'],
   }
 
-  concat{ "${::tdc::checkrootdir}/${::tdc::checkconfigdir}/tdc_${title}-hostipv6.cfg":
+  concat{ "${tdc::checkrootdir}/${tdc::checkconfigdir}/tdc_${title}-hostipv6.cfg":
     owner => 'root',
     group => 'root',
     mode  => '0644',
   }
 
-  concat::fragment{ "${::tdc::checkrootdir}/${::tdc::checkconfigdir}/tdc_${title}-hostipv6.cfg header":
-      target  => "${::tdc::checkrootdir}/${::tdc::checkconfigdir}/tdc_${title}-hostipv6.cfg",
+  concat::fragment{ "${tdc::checkrootdir}/${tdc::checkconfigdir}/tdc_${title}-hostipv6.cfg header":
+      target  => "${tdc::checkrootdir}/${tdc::checkconfigdir}/tdc_${title}-hostipv6.cfg",
       content => epp('tdc/tdc_config_header.epp', {'type' => 'test for hostipv6', 'cmn' => $title}),
       order   => '00',
   }
 
   generate ('/bin/bash', '-c',
-            "${::tdc::generator} ${nagiosout} service no dummy")
+            "${tdc::generator} ${nagiosout} service no dummy")
   generate ('/bin/bash', '-c',
-            "${::tdc::generator} ${nagiosout} hostgroup no dummy ${::fqdn}")
+            "${tdc::generator} ${nagiosout} hostgroup no dummy ${facts['networking']['fqdn']}")
 
   # create the tests from the process array
   $host.each | $f, $fff | {
     concat::fragment { "${fff} ${f}":
-      target  => "${::tdc::checkrootdir}/${::tdc::checkconfigdir}/tdc_${title}-hostipv6.cfg",
-      content => "command[check_tdc_${title}-${f}-${::fqdn}-hostipv6]=${nagioscheck} -H ${fff} -4 -w ${pingwarning} -c ${pingcritical}\n",
-      notify  => Service[$::tdc::nrpeservice],
+      target  => "${tdc::checkrootdir}/${tdc::checkconfigdir}/tdc_${title}-hostipv6.cfg",
+      content => "command[check_tdc_${title}-${f}-${facts['networking']['fqdn']}-hostipv6]=${nagioscheck} -H ${fff} -4 -w ${pingwarning} -c ${pingcritical}\n",
+      notify  => Service[$tdc::nrpeservice],
     }
     generate ('/bin/bash', '-c',
-              "${::tdc::generator} ${nagiosout} service yes check_tdc_${title}-${f}-${::fqdn}-hostipv6")
+              "${tdc::generator} ${nagiosout} service yes check_tdc_${title}-${f}-${facts['networking']['fqdn']}-hostipv6")
     generate ('/bin/bash', '-c',
-              "${::tdc::generator} ${nagiosout} hostgroup yes check_tdc_${title}-${f}-${::fqdn}-hostipv6 ${::fqdn}")
+              "${tdc::generator} ${nagiosout} hostgroup yes check_tdc_${title}-${f}-${facts['networking']['fqdn']}-hostipv6 ${facts['networking']['fqdn']}")
   }
 
 #III we don't need hosts yet:
-# generate ("/bin/bash", "-c", "${::tdc::generator} ${::tdc::nagiosdir}/tdc-$fqdn-${title}-hostipv6 host no $fqdn")
+# generate ("/bin/bash", "-c", "${tdc::generator} ${tdc::nagiosdir}/tdc-$fqdn-${title}-hostipv6 host no $fqdn")
 }

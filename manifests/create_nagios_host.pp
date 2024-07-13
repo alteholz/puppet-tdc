@@ -29,9 +29,9 @@
 #
 
 define tdc::create_nagios_host (
-  String  $nagiosout   = "${::tdc::nagiosdir}/tdc-${::fqdn}",
+  String  $nagiosout   = "${tdc::nagiosdir}/tdc-${facts['networking']['fqdn']}",
   String  $nagioshostuse = "generic-host",
-  String  $nagioshostdb = "${::tdc::nagiosdir}/hostdb.tdc",
+  String  $nagioshostdb = "${tdc::nagiosdir}/hostdb.tdc",
   String  $tdctitle = $title,
 ) {
 #) inherits tdc {
@@ -40,5 +40,5 @@ define tdc::create_nagios_host (
     path    => ['/usr/bin', '/usr/sbin', '/bin'],
   }
 
- generate ("/bin/bash", "-c", "${::tdc::generator} ${nagiosout} host onlycreateonce $fqdn ${nagioshostuse} ${nagioshostdb}")
+ generate ("/bin/bash", "-c", "${tdc::generator} ${nagiosout} host onlycreateonce $fqdn ${nagioshostuse} ${nagioshostdb}")
 }
