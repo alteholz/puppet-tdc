@@ -25,10 +25,12 @@
 #        process   => ['tayga'],
 #   }
 #
-# @param process
-#   Array of processes to be tested
-#
-
+# @param process Array of processes to be tested
+# @param nagiosout outputfile for this test
+# @param nagioscheck name of check to be performed
+# @param minprocs minimal number of processes that should be available
+# @param maxprocs maximal number of processes that should be available
+# @param tdctitle name of test (should not be changed)
 define tdc::test_process (
   Array   $process     = [],
   String  $nagiosout   = "${tdc::nagiosdir}/tdc-${facts['networking']['fqdn']}-${title}-process",
