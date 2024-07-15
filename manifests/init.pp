@@ -39,7 +39,6 @@
 #   Generator for configuration files (up to now only nagios)
 # @param nrpeservice
 #   service to notify in case of changed test configuration
-#
 class tdc (
   String  $monitor      = 'nagios',
   String  $checkrootdir      = '/usr/local/nagios/tdc',
@@ -49,29 +48,29 @@ class tdc (
   String  $generator      = '/usr/share/puppet/modules/tdc/lib/puppet-generator-nagios',
   String  $nrpeservice      = 'nagios-nrpe-server',
 ) {
+#) inherits tdc {
 
   Exec {
     path    => ['/usr/bin', '/usr/sbin', '/bin'],
   }
 
-  file{ $checkrootdir:
-      ensure => directory,
-      owner  => 'root',
-      group  => 'root',
-      mode   => '0755',
-    }
-  file{ "${checkrootdir}/${checkscriptdir}":
-      ensure => directory,
-      owner  => 'root',
-      group  => 'root',
-      mode   => '0755',
-    }
+  file { $checkrootdir:
+    ensure => directory,
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0755',
+  }
+  file { "${checkrootdir}/${checkscriptdir}":
+    ensure => directory,
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0755',
+  }
 
-  file{ "${checkrootdir}/${checkconfigdir}":
-      ensure => directory,
-      owner  => 'root',
-      group  => 'root',
-      mode   => '0755',
-    }
-
+  file { "${checkrootdir}/${checkconfigdir}":
+    ensure => directory,
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0755',
+  }
 }

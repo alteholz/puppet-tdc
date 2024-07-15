@@ -24,13 +24,13 @@
 #   define { 'tdc::create_nagios_host':
 #   }
 #
-# @param process
-#   Array of processes to be tested
-#
-
+# @param nagiosout outputfile for this test
+# @param nagioshostuse name of host to be used in definition
+# @param nagioshostdb name of hostdb to be used
+# @param tdctitle name of test (should not be changed)
 define tdc::create_nagios_host (
   String  $nagiosout   = "${tdc::nagiosdir}/tdc-${facts['networking']['fqdn']}",
-  String  $nagioshostuse = "generic-host",
+  String  $nagioshostuse = 'generic-host',
   String  $nagioshostdb = "${tdc::nagiosdir}/hostdb.tdc",
   String  $tdctitle = $title,
 ) {
@@ -40,5 +40,6 @@ define tdc::create_nagios_host (
     path    => ['/usr/bin', '/usr/sbin', '/bin'],
   }
 
- generate ("/bin/bash", "-c", "${tdc::generator} ${nagiosout} host onlycreateonce $fqdn ${nagioshostuse} ${nagioshostdb}")
+  generate ('/bin/bash', '-c',
+  "${tdc::generator} ${nagiosout} host onlycreateonce ${facts['networking']['fqdn']} ${nagioshostuse} ${nagioshostdb}")
 }

@@ -25,16 +25,18 @@
 #        host   => ['host.example.com'],
 #   }
 #
-# @param host
-#   Array of hosts to be tested
-#
-
+# @param host Array of hosts to be tested
+# @param nagiosout outputfile for this test
+# @param nagioscheck name of check to be performed
+# @param pingwarning waring level for ping
+# @param pingcritical critical level for ping
+# @param tdctitle name of test (should not be changed)
 define tdc::test_hostipv4 (
   Array   $host         = [],
   String  $nagiosout    = "${tdc::nagiosdir}/tdc-${facts['networking']['fqdn']}-${title}-hostipv4",
   String  $nagioscheck  = '/usr/lib/nagios/plugins/check_ping',
-  String  $pingwarning  = "1000,20%",
-  String  $pingcritical = "1500,60%",
+  String  $pingwarning  = '1000,20%',
+  String  $pingcritical = '1500,60%',
   String  $tdctitle = $title,
 ) {
 #) inherits tdc {
@@ -43,34 +45,33 @@ define tdc::test_hostipv4 (
     path    => ['/usr/bin', '/usr/sbin', '/bin'],
   }
 
-  concat{ "${tdc::checkrootdir}/${tdc::checkconfigdir}/tdc_${title}-hostipv4.cfg":
+  concat { "${tdc::checkrootdir}/${tdc::checkconfigdir}/tdc_${title}-hostipv4.cfg":
     owner => 'root',
     group => 'root',
     mode  => '0644',
   }
 
-  concat::fragment{ "${tdc::checkrootdir}/${tdc::checkconfigdir}/tdc_${title}-hostipv4.cfg header":
-      target  => "${tdc::checkrootdir}/${tdc::checkconfigdir}/tdc_${title}-hostipv4.cfg",
-      content => epp('tdc/tdc_config_header.epp', {'type' => 'test for hostipv4', 'cmn' => $title}),
-      order   => '00',
+  concat::fragment { "${tdc::checkrootdir}/${tdc::checkconfigdir}/tdc_${title}-hostipv4.cfg header":
+    target  => "${tdc::checkrootdir}/${tdc::checkconfigdir}/tdc_${title}-hostipv4.cfg",
+    content => epp('tdc/tdc_config_header.epp', { 'type' => 'test for hostipv4', 'cmn' => $title }),
+    order   => '00',
   }
 
-  generate ('/bin/bash', '-c',
-            "${tdc::generator} ${nagiosout} service no dummy")
-  generate ('/bin/bash', '-c',
-            "${tdc::generator} ${nagiosout} hostgroup no dummy ${facts['networking']['fqdn']}")
+  generate ('/bin/bash', '-c', "${tdc::generator} ${nagiosout} service no dummy")
+  generate ('/bin/bash', '-c', "${tdc::generator} ${nagiosout} hostgroup no dummy ${facts['networking']['fqdn']}")
 
   # create the tests from the process array
   $host.each | $f, $fff | {
     concat::fragment { "${fff} ${f}":
       target  => "${tdc::checkrootdir}/${tdc::checkconfigdir}/tdc_${title}-hostipv4.cfg",
-      content => "command[check_tdc_${title}-${f}-${facts['networking']['fqdn']}-hostipv4]=${nagioscheck} -H ${fff} -4 -w ${pingwarning} -c ${pingcritical}\n",
+      content => "command[check_tdc_${title}-${f}-${facts['networking']['fqdn']}-hostipv4]=${nagioscheck}
+        -H ${fff} -4 -w ${pingwarning} -c ${pingcritical}\n",
       notify  => Service[$tdc::nrpeservice],
     }
-    generate ('/bin/bash', '-c',
-              "${tdc::generator} ${nagiosout} service yes check_tdc_${title}-${f}-${facts['networking']['fqdn']}-hostipv4")
-    generate ('/bin/bash', '-c',
-              "${tdc::generator} ${nagiosout} hostgroup yes check_tdc_${title}-${f}-${facts['networking']['fqdn']}-hostipv4 ${facts['networking']['fqdn']}")
+  generate ('/bin/bash', '-c', "${tdc::generator} ${nagiosout} service yes
+    check_tdc_${title}-${f}-${facts['networking']['fqdn']}-hostipv4")
+  generate ('/bin/bash', '-c', "${tdc::generator} ${nagiosout} hostgroup yes
+    check_tdc_${title}-${f}-${facts['networking']['fqdn']}-hostipv4 ${facts['networking']['fqdn']}")
   }
 
 #III we don't need hosts yet:
