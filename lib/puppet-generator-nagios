@@ -44,9 +44,15 @@ if [ "x$PARA1" == "xdummy" ]; then
 fi
 
 if [ "x$WHAT" == "xservice" ]; then
+  # for tdc_manual we have $PARA2 containg the name of the manual test
+  # all other services should have an empty string
   echo "define service {" >> $OUT
   echo "        hostgroup_name                  $PARA1" >> $OUT
-  echo "        service_description             Service for `basename $DEST`" >> $OUT
+  if [ -z "$PARA2" ]; then
+    echo "        service_description             Service for `basename $DEST`" >> $OUT
+  else
+    echo "        service_description             Service $PARA2 for `basename $DEST`" >> $OUT
+  fi
   echo "        check_command                   check_nrpe_1arg!$PARA1" >> $OUT
   echo "        use                             generic-service" >> $OUT
   echo "        notification_interval           0" >> $OUT

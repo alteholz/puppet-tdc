@@ -63,10 +63,10 @@ define tdc::test_directory (
       target  => "${tdc::checkrootdir}/${tdc::checkconfigdir}/tdc_${title}-directory.cfg",
       content => "command[check_tdc_${title}-${f}-${facts['networking']['fqdn']}-directory]=${nagioscheck} ${ddd}\n",
     }
-  generate ('/bin/bash', '-c', "${tdc::generator} ${nagiosout} service yes
-    check_tdc_${title}-${f}-${facts['networking']['fqdn']}-directory")
-  generate ('/bin/bash', '-c', "${tdc::generator} ${nagiosout} hostgroup yes
-    check_tdc_${title}-${f}-${facts['networking']['fqdn']}-directory ${facts['networking']['fqdn']}")
+    generate ('/bin/bash', '-c',
+    "${tdc::generator} ${nagiosout} service yes check_tdc_${title}-${f}-${facts['networking']['fqdn']}-directory")
+    generate ('/bin/bash', '-c',
+    "${tdc::generator} ${nagiosout} hostgroup yes check_tdc_${title}-${f}-${facts['networking']['fqdn']}-directory ${facts['networking']['fqdn']}")
   }
 
   if !defined(File["${tdc::checkrootdir}/${tdc::checkscriptdir}/check_tdc_directory"]) {

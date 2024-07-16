@@ -68,10 +68,10 @@ define tdc::test_process (
         -C ${fff} -c ${minprocs}:${maxprocs}\n",
       notify  => Service[$tdc::nrpeservice],
     }
-  generate ('/bin/bash', '-c', "${tdc::generator} ${nagiosout} service yes
-    check_tdc_${title}-${f}-${facts['networking']['fqdn']}-process")
-  generate ('/bin/bash', '-c', "${tdc::generator} ${nagiosout} hostgroup yes
-    check_tdc_${title}-${f}-${facts['networking']['fqdn']}-process ${facts['networking']['fqdn']}")
+    generate ('/bin/bash', '-c',
+    "${tdc::generator} ${nagiosout} service yes check_tdc_${title}-${f}-${facts['networking']['fqdn']}-process")
+    generate ('/bin/bash', '-c',
+    "${tdc::generator} ${nagiosout} hostgroup yes check_tdc_${title}-${f}-${facts['networking']['fqdn']}-process ${facts['networking']['fqdn']}")
   }
 
 #III we don't need hosts yet:

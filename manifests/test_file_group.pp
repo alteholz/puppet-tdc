@@ -68,10 +68,10 @@ define tdc::test_file_group (
         ${fff['file']} ${fff['group']}\n",
       notify  => Service[$tdc::nrpeservice],
     }
-  generate ('/bin/bash', '-c', "${tdc::generator} ${nagiosout} service yes
-    check_tdc_${title}-${f}-${facts['networking']['fqdn']}-file-group")
-  generate ('/bin/bash', '-c', "${tdc::generator} ${nagiosout} hostgroup yes
-    check_tdc_${title}-${f}-${facts['networking']['fqdn']}-file-group ${facts['networking']['fqdn']}")
+    generate ('/bin/bash', '-c',
+    "${tdc::generator} ${nagiosout} service yes check_tdc_${title}-${f}-${facts['networking']['fqdn']}-file-group")
+    generate ('/bin/bash', '-c',
+    "${tdc::generator} ${nagiosout} hostgroup yes check_tdc_${title}-${f}-${facts['networking']['fqdn']}-file-group ${facts['networking']['fqdn']}")
   }
 
   if !defined(File["${tdc::checkrootdir}/${tdc::checkscriptdir}/check_tdc_file_group"]) {

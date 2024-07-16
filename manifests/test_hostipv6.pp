@@ -73,8 +73,7 @@ define tdc::test_hostipv6 (
     generate ('/bin/bash', '-c',
     "${tdc::generator} ${nagiosout} service yes check_tdc_${title}-${f}-${facts['networking']['fqdn']}-hostipv6")
     generate ('/bin/bash', '-c',
-    "${tdc::generator} ${nagiosout} hostgroup yes 
-    check_tdc_${title}-${f}-${facts['networking']['fqdn']}-hostipv6 ${facts['networking']['fqdn']}")
+    "${tdc::generator} ${nagiosout} hostgroup yes check_tdc_${title}-${f}-${facts['networking']['fqdn']}-hostipv6 ${facts['networking']['fqdn']}")
   }
 
 #III we don't need hosts yet:

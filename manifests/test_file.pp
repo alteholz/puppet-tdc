@@ -65,10 +65,10 @@ define tdc::test_file (
       content => "command[check_tdc_${title}-${f}-${facts['networking']['fqdn']}-file]=${nagioscheck} ${fff}\n",
       notify  => Service[$tdc::nrpeservice],
     }
-  generate ('/bin/bash', '-c', "${tdc::generator} ${nagiosout} service yes
-    check_tdc_${title}-${f}-${facts['networking']['fqdn']}-file")
-  generate ('/bin/bash', '-c', "${tdc::generator} ${nagiosout} hostgroup yes
-    check_tdc_${title}-${f}-${facts['networking']['fqdn']}-file ${facts['networking']['fqdn']}")
+    generate ('/bin/bash', '-c',
+    "${tdc::generator} ${nagiosout} service yes check_tdc_${title}-${f}-${facts['networking']['fqdn']}-file")
+    generate ('/bin/bash', '-c',
+    "${tdc::generator} ${nagiosout} hostgroup yes check_tdc_${title}-${f}-${facts['networking']['fqdn']}-file ${facts['networking']['fqdn']}")
   }
 
   if !defined(File["${tdc::checkrootdir}/${tdc::checkscriptdir}/check_tdc_file"]) {
