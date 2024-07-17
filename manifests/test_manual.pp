@@ -3,7 +3,7 @@
 #
 #    define for manual testing of nrpe stuff
 #
-#    Copyright (C) 2021  Thorsten Alteholz
+#    Copyright (C) 2021-2024  Thorsten Alteholz
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -57,16 +57,15 @@ define tdc::test_manual (
   generate ('/bin/bash', '-c', "${tdc::generator} ${nagiosout} hostgroup no dummy ${facts['networking']['fqdn']}")
 
   # create the tests from the manual array
+  $lfqdn=$facts['networking']['fqdn']
   $manual.each | $f, $fff | {
     concat::fragment { "${fff} ${f}":
       target  => "${tdc::checkrootdir}/${tdc::checkconfigdir}/tdc_${title}-manual.cfg",
-      content => "command[check_tdc_${title}-${f}-${facts['networking']['fqdn']}-manual]=${nagioscheckprefix}/${fff} \n",
+      content => "command[check_tdc_${title}-${f}-${lfqdn}-manual]=${nagioscheckprefix}/${fff} \n",
       notify  => Service[$tdc::nrpeservice],
     }
-    generate ('/bin/bash', '-c',
-    "${tdc::generator} ${nagiosout} service yes check_tdc_${title}-${f}-${facts['networking']['fqdn']}-manual ${fff}")
-    generate ('/bin/bash', '-c',
-    "${tdc::generator} ${nagiosout} hostgroup yes check_tdc_${title}-${f}-${facts['networking']['fqdn']}-manual ${facts['networking']['fqdn']}")
+    generate ('/bin/bash', '-c', "${tdc::generator} ${nagiosout} service yes check_tdc_${title}-${f}-${lfqdn}-manual ${fff}")
+    generate ('/bin/bash', '-c', "${tdc::generator} ${nagiosout} hostgroup yes check_tdc_${title}-${f}-${lfqdn}-manual ${lfqdn}")
   }
 
 #III we don't need hosts yet:

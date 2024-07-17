@@ -3,7 +3,7 @@
 #
 #    define for testing permissions of a list of files
 #
-#    Copyright (C) 2020  Thorsten Alteholz
+#    Copyright (C) 2020-2024  Thorsten Alteholz
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -61,17 +61,15 @@ define tdc::test_file_permission (
   generate ('/bin/bash', '-c', "${tdc::generator} ${nagiosout} hostgroup no dummy ${facts['networking']['fqdn']}")
 
   # create the tests from the file array
+  $lfqdn=$facts['networking']['fqdn']
   $file.each | $f, $fff | {
     concat::fragment { "${fff} ${f}":
       target  => "${tdc::checkrootdir}/${tdc::checkconfigdir}/tdc_${title}-file-permission.cfg",
-      content => "command[check_tdc_${title}-${f}-${facts['networking']['fqdn']}-file-permission]=${nagioscheck}
-        ${fff['file']} ${fff['permission']}\n",
+      content => "command[check_tdc_${title}-${f}-${lfqdn}-file-permission]=${nagioscheck} ${fff['file']} ${fff['permission']}\n",
       notify  => Service[$tdc::nrpeservice],
     }
-    generate ('/bin/bash', '-c',
-    "${tdc::generator} ${nagiosout} service yes check_tdc_${title}-${f}-${facts['networking']['fqdn']}-file-permission")
-    generate ('/bin/bash', '-c',
-    "${tdc::generator} ${nagiosout} hostgroup yes check_tdc_${title}-${f}-${facts['networking']['fqdn']}-file-permission ${facts['networking']['fqdn']}")
+    generate ('/bin/bash', '-c', "${tdc::generator} ${nagiosout} service yes check_tdc_${title}-${f}-${lfqdn}-file-permission")
+    generate ('/bin/bash', '-c', "${tdc::generator} ${nagiosout} hostgroup yes check_tdc_${title}-${f}-${lfqdn}-file-permission ${lfqdn}")
   }
 
   if !defined(File["${tdc::checkrootdir}/${tdc::checkscriptdir}/check_tdc_file_permission"]) {

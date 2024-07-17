@@ -3,7 +3,7 @@
 #
 #    define for testing presence of a host via ipv6
 #
-#    Copyright (C) 2020  Thorsten Alteholz
+#    Copyright (C) 2020-2024  Thorsten Alteholz
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -63,17 +63,15 @@ define tdc::test_hostipv6 (
   "${tdc::generator} ${nagiosout} hostgroup no dummy ${facts['networking']['fqdn']}")
 
   # create the tests from the process array
+  $lfqdn=$facts['networking']['fqdn']
   $host.each | $f, $fff | {
     concat::fragment { "${fff} ${f}":
       target  => "${tdc::checkrootdir}/${tdc::checkconfigdir}/tdc_${title}-hostipv6.cfg",
-      content => "command[check_tdc_${title}-${f}-${facts['networking']['fqdn']}-hostipv6]=${nagioscheck}
-        -H ${fff} -4 -w ${pingwarning} -c ${pingcritical}\n",
+      content => "command[check_tdc_${title}-${f}-${lfqdn}-hostipv6]=${nagioscheck} -H ${fff} -4 -w ${pingwarning} -c ${pingcritical}\n",
       notify  => Service[$tdc::nrpeservice],
     }
-    generate ('/bin/bash', '-c',
-    "${tdc::generator} ${nagiosout} service yes check_tdc_${title}-${f}-${facts['networking']['fqdn']}-hostipv6")
-    generate ('/bin/bash', '-c',
-    "${tdc::generator} ${nagiosout} hostgroup yes check_tdc_${title}-${f}-${facts['networking']['fqdn']}-hostipv6 ${facts['networking']['fqdn']}")
+    generate ('/bin/bash', '-c', "${tdc::generator} ${nagiosout} service yes check_tdc_${title}-${f}-${lfqdn}-hostipv6")
+    generate ('/bin/bash', '-c', "${tdc::generator} ${nagiosout} hostgroup yes check_tdc_${title}-${f}-${lfqdn}-hostipv6 ${lfqdn}")
   }
 
 #III we don't need hosts yet:

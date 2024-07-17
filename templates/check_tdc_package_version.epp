@@ -2,7 +2,7 @@
 #
 #    TDC: Test-driven configuration
 #
-#    performs check whether link is available and really is a link
+#    performs check whether installed package version is greater or equal than the required one
 #
 #    Copyright (C) 2020-2024  Thorsten Alteholz
 #
@@ -18,15 +18,28 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
-# parameter: LINK -> link to test
+# parameter: PACKAGE -> package to test
+# parameter: VERSION -> version to test
 
-LINK=$1
-DEST=$2
+PACKAGE=$1
+VERSION=$2
 
-if [ -L $LINK ]; then
-  echo "OK: $LINK is available"
+DPKG=/usr/bin/dpkg
+
+if [ ! -f $DPKG ]; then
+  echo "CRITICAL: $DPKG not found"
+  exit 2
+fi
+
+PVERSION=`$DPKG -s $PACKAGE | grep '^Version:'|awk '{printf("%s\n",$2)}'`
+
+$DPKG --compare-versions $PVERSION gt $VERSION
+rc=$?
+
+if [ $rc == 0 ]; then
+  echo "OK: $PACKAGE is at least available in version $VERSION (-> $PVERSION)"
   exit 0
 fi
 
-echo "CRITICAL: $LINK is not available"
+echo "CRITICAL: version of $PACKAGE is $PVERSION which is not greater or equal to $VERSION"
 exit 2

@@ -3,7 +3,7 @@
 #
 #    define host entry for nagios
 #
-#    Copyright (C) 2020  Thorsten Alteholz
+#    Copyright (C) 2020-2024  Thorsten Alteholz
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by

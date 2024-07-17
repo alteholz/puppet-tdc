@@ -3,7 +3,7 @@
 #
 #    class for testing configuration of a software
 #
-#    Copyright (C) 2020  Thorsten Alteholz
+#    Copyright (C) 2020-2024  Thorsten Alteholz
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -68,10 +68,9 @@ define tdc::test_config (
     notify  => Service[$tdc::nrpeservice],
   }
 
-  generate ('/bin/bash', '-c',
-  "${tdc::generator} ${nagiosout} service onlycreateonce check_tdc_${title}-${facts['networking']['fqdn']}-config")
-  generate ('/bin/bash', '-c',
-  "${tdc::generator} ${nagiosout} hostgroup onlycreateonce check_tdc_${title}-${facts['networking']['fqdn']}-config ${facts['networking']['fqdn']}")
+  $lfqdn=$facts['networking']['fqdn']
+  generate ('/bin/bash', '-c', "${tdc::generator} ${nagiosout} service onlycreateonce check_tdc_${title}-${$lfqdn}-config")
+  generate ('/bin/bash', '-c', "${tdc::generator} ${nagiosout} hostgroup onlycreateonce check_tdc_${title}-${lfqdn}-config ${lfqdn}")
 
   if !defined(File["${tdc::checkrootdir}/${tdc::checkscriptdir}/check_tdc_config"]) {
     file { "${tdc::checkrootdir}/${tdc::checkscriptdir}/check_tdc_config":

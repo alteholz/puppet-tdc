@@ -3,7 +3,7 @@
 #
 #    define for testing presence of a list of files
 #
-#    Copyright (C) 2020  Thorsten Alteholz
+#    Copyright (C) 2020-2024  Thorsten Alteholz
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -65,10 +65,9 @@ define tdc::test_file (
       content => "command[check_tdc_${title}-${f}-${facts['networking']['fqdn']}-file]=${nagioscheck} ${fff}\n",
       notify  => Service[$tdc::nrpeservice],
     }
-    generate ('/bin/bash', '-c',
-    "${tdc::generator} ${nagiosout} service yes check_tdc_${title}-${f}-${facts['networking']['fqdn']}-file")
-    generate ('/bin/bash', '-c',
-    "${tdc::generator} ${nagiosout} hostgroup yes check_tdc_${title}-${f}-${facts['networking']['fqdn']}-file ${facts['networking']['fqdn']}")
+    $lfqdn=$facts['networking']['fqdn']
+    generate ('/bin/bash', '-c', "${tdc::generator} ${nagiosout} service yes check_tdc_${title}-${f}-${lfqdn}-file")
+    generate ('/bin/bash', '-c', "${tdc::generator} ${nagiosout} hostgroup yes check_tdc_${title}-${f}-${lfqdn}-file ${lfqdn}")
   }
 
   if !defined(File["${tdc::checkrootdir}/${tdc::checkscriptdir}/check_tdc_file"]) {
@@ -83,5 +82,5 @@ define tdc::test_file (
   }
 
 #III we don't need hosts yet:
-# generate ("/bin/bash", "-c", "${tdc::generator} ${tdc::nagiosdir}/tdc-$fqdn-${title}-file host no $fqdn")
+# generate ("/bin/bash", "-c", "${tdc::generator} ${tdc::nagiosdir}/tdc-$lfqdn-${title}-file host no $lfqdn")
 }

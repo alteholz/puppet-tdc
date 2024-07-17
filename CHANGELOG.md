@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## Release 0.0.4
+
+tidying up; make it work again under Bookworm
+
+new checks:
+ check_tdc_package_version
+
+## Release 0.0.3
+
+new checks:
+ test_manual.pp
+
 ## Release 0.0.2
 
 new checks:
