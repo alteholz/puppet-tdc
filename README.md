@@ -1,3 +1,9 @@
+
+This repository has been moved to codeberg and is now available at
+
+    https://codeberg.org/alteholz/puppet-tdc.git
+
+
 # tdc
 
 #### Table of Contents
